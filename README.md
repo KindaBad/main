@@ -1,2 +1,2 @@
-# ill do this later
+# ill do this later.
 also heres the link https://kindabad.github.io/main/
