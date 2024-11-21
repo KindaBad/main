@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chocolate Cake Delight</title>
+    <style>
+        /* Reset default browser styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #FFFFFF; /* Dark background to make the cake pop */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            color: #FFFFFF;
+            position: relative;
+        }
+
+        .cake-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .cake {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2; /* Ensure the central cake is on top */
+        }
+
+        .clone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: fadeExpand 5s forwards;
+            pointer-events: none;
+            z-index: 1; /* Clones are behind the central cake */
+        }
+
+        .timer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 1.2em;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 3; /* Timer is above clones and central cake */
+        }
+
+        /* Animation for cloning, fading, and expanding */
+        @keyframes fadeExpand {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(3);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .cake-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .timer {
+                font-size: 1em;
+                padding: 8px 16px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .cake-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            .timer {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cake-container">
+        <!-- Replace the src attribute with your own chocolate cake PNG image -->
+        <img src="https://static.vecteezy.com/system/resources/previews/009/887/171/non_2x/chocolate-cake-free-png.png" alt="Chocolate Cake" class="cake">
+    </div>
+
+    <div class="timer">
+        You have been watching the chocolate cake for <span id="time">00:00:00</span>. You are a <span id="rank">Novice Baker</span>.
+    </div>
+
+    <script>
+        // Clone Animation
+        const cakeContainer = document.querySelector('.cake-container');
+        const cake = document.querySelector('.cake');
+
+        function createClone() {
+            const clone = cake.cloneNode(true);
+            clone.classList.add('clone');
+            cakeContainer.appendChild(clone);
+
+            // Remove the clone after the animation completes to prevent DOM clutter
+            clone.addEventListener('animationend', () => {
+                clone.remove();
+            });
+        }
+
+        // Create a clone every second
+        setInterval(createClone, 1000);
+
+        // Timer Functionality with Persistent Storage
+        let totalTime = parseInt(localStorage.getItem('totalTime')) || 0;
+        const timeDisplay = document.getElementById('time');
+        const rankDisplay = document.getElementById('rank');
+
+        function updateTimer() {
+            totalTime++;
+            timeDisplay.textContent = formatTime(totalTime);
+            rankDisplay.textContent = getRank(totalTime);
+            localStorage.setItem('totalTime', totalTime);
+        }
+
+        function formatTime(sec) {
+            const hours = Math.floor(sec / 3600);
+            const minutes = Math.floor((sec % 3600) / 60);
+            const seconds = sec % 60;
+            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        function getRank(sec) {
+            // Define ranks with exponentially increasing thresholds
+            const ranks = [
+                { threshold: 0, rank: "Novice Baker" },
+                { threshold: 30, rank: "Apprentice Baker" },
+                { threshold: 60, rank: "Skilled Baker" },
+                { threshold: 120, rank: "Pro Baker" },
+                { threshold: 240, rank: "Expert Baker" },
+                { threshold: 480, rank: "Master Baker" },
+                { threshold: 960, rank: "Grand Master Baker" },
+                { threshold: 1920, rank: "Legendary Baker" },
+                { threshold: 3840, rank: "Ultimate Baker" },
+                { threshold: 7680, rank: "Supreme Baker" },
+                { threshold: 15360, rank: "Epic Baker" },
+                { threshold: 30720, rank: "Mythical Baker" },
+                { threshold: 61440, rank: "Divine Baker" },
+                { threshold: 122880, rank: "Celestial Baker" },
+                { threshold: 245760, rank: "Ethereal Baker" },
+                { threshold: 491520, rank: "Transcendent Baker" },
+                { threshold: 983040, rank: "Infinite Baker" },
+                { threshold: 1966080, rank: "Omnipotent Baker" },
+                { threshold: 3932160, rank: "Supreme Deity Baker" },
+                { threshold: 7864320, rank: "Ultimate Godly Baker" },
+                { threshold: 15728640, rank: "Cosmic Baker" },
+                { threshold: 31457280, rank: "Galactic Baker" },
+                { threshold: 62914560, rank: "Universal Baker" },
+                { threshold: 125829120, rank: "Multiverse Baker" },
+                { threshold: 251658240, rank: "Omniverse Baker" },
+                { threshold: 503316480, rank: "Eternal Baker" },
+                { threshold: 1006632960, rank: "Infinite Eternity Baker" },
+                { threshold: 2013265920, rank: "Absolute Baker" },
+                { threshold: 4026531840, rank: "Absolute Eternity Baker" },
+                { threshold: 8053063680, rank: "Perpetual Baker" },
+                { threshold: 16106127360, rank: "Everlasting Baker" },
+                { threshold: 32212254720, rank: "Timeless Baker" },
+                { threshold: 64424509440, rank: "Immortal Baker" },
+                { threshold: 128849018880, rank: "Divine Immortal Baker" },
+                { threshold: 257698037760, rank: "Transcendent Immortal Baker" },
+                { threshold: 515396075520, rank: "Eternal Immortal Baker" },
+                { threshold: 1030792151040, rank: "Infinite Immortal Baker" },
+                { threshold: 2061584302080, rank: "Omniscient Baker" },
+                { threshold: 4123168604160, rank: "Supreme Omniscient Baker" },
+                { threshold: 8246337208320, rank: "Eternal Omniscient Baker" },
+                { threshold: 16492674416640, rank: "Cosmic Omniscient Baker" },
+                { threshold: 32985348833280, rank: "Galactic Omniscient Baker" },
+                { threshold: 65970697666560, rank: "Universal Omniscient Baker" },
+                { threshold: 131941395333120, rank: "Multiversal Omniscient Baker" },
+                { threshold: 263882790666240, rank: "Omniversal Omniscient Baker" },
+                { threshold: 527765581332480, rank: "Infinite Omniscient Baker" },
+                { threshold: 1055531162664960, rank: "Timeless Omniscient Baker" }
+            ];
+
+            // Find the highest rank that the seconds >= threshold
+            let currentRank = "Novice Baker"; // Default rank
+
+            for (let i = 0; i < ranks.length; i++) {
+                if (sec >= ranks[i].threshold) {
+                    currentRank = ranks[i].rank;
+                } else {
+                    break;
+                }
+            }
+
+            return currentRank;
+        }
+
+        // Initialize the timer display
+        timeDisplay.textContent = formatTime(totalTime);
+        rankDisplay.textContent = getRank(totalTime);
+
+        // Start the timer
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
