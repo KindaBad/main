@@ -12,133 +12,561 @@
             box-sizing: border-box;
         }
 
+        /* Typography and Font Imports */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
         body {
-            background-color: #FFFFFF; /* Dark background to make the cake pop */
+            background: linear-gradient(135deg, #f8e5d1, #e0c3fc);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            color: #FFFFFF;
-            position: relative;
+            font-family: 'Roboto', sans-serif;
+            color: #333333;
+        }
+
+        .main-container {
+            display: flex;
+            width: 90%;
+            height: 90%;
+            max-width: 1400px;
+            max-height: 900px;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .cake-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            background-image: url('https://images.unsplash.com/photo-1556911073-52527ac437f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80');
+            background-size: cover;
+            background-position: center;
         }
 
         .cake-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent; /* Ensure transparency */
         }
 
         .cake {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 2; /* Ensure the central cake is on top */
+            border-radius: 20px;
+            background-color: transparent; /* Ensure transparency */
         }
 
-        .clone {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            animation: fadeExpand 5s forwards;
-            pointer-events: none;
-            z-index: 1; /* Clones are behind the central cake */
-        }
-
-        .timer {
-            position: absolute;
-            bottom: 20px;
+        .timer, .coin-display {
+            margin-top: 20px;
             font-size: 1.2em;
             text-align: center;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.85);
             padding: 10px 20px;
             border-radius: 10px;
-            z-index: 3; /* Timer is above clones and central cake */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 80%;
         }
 
-        /* Animation for cloning, fading, and expanding */
-        @keyframes fadeExpand {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(3);
-            }
+        .shop-section {
+            flex: 1;
+            border-left: 2px solid #CCCCCC;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: rgba(250, 250, 250, 0.95);
+        }
+
+        .shop-section h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8em;
+            color: #5D4037;
+        }
+
+        .shop-category {
+            margin-bottom: 30px;
+        }
+
+        .shop-category h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: #6D4C41;
+            border-bottom: 1px solid #D7CCC8;
+            padding-bottom: 5px;
+        }
+
+        .shop-item, .upgrade-item {
+            background-color: #FFFFFF;
+            border: 1px solid #DDDDDD;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .shop-item:hover, .upgrade-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .shop-item h4, .upgrade-item h4 {
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            color: #3E2723;
+        }
+
+        .shop-item .effect-preview, .upgrade-item .upgrade-preview {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #EEEEEE;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .shop-item .effect-preview img, .upgrade-item .upgrade-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .shop-item button, .upgrade-item button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #8D6E63;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .shop-item button:disabled, .upgrade-item button:disabled {
+            background-color: #BDBDBD;
+            cursor: not-allowed;
+        }
+
+        .shop-item button:hover:not(:disabled), .upgrade-item button:hover:not(:disabled) {
+            background-color: #6D4C41;
+        }
+
+        /* Effect Animations */
+        /* Glitch Effect */
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            10% { transform: translate(-2px, 2px); }
+            20% { transform: translate(-2px, -2px); }
+            30% { transform: translate(2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, 2px); }
+            60% { transform: translate(2px, -2px); }
+            70% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            90% { transform: translate(-2px, 2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch {
+            animation: glitch-anim 1.5s infinite;
+        }
+
+        /* Neon Glow */
+        @keyframes neon-anim {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.7); }
+        }
+
+        .neon {
+            animation: neon-anim 2s infinite alternate;
+        }
+
+        /* Spin Effect */
+        @keyframes spin-anim {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spin {
+            animation: spin-anim 5s linear infinite;
+        }
+
+        /* Pulse Effect */
+        @keyframes pulse-anim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse-anim 1.5s ease-in-out infinite;
+        }
+
+        /* Grow Effect */
+        @keyframes grow-anim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .grow {
+            animation: grow-anim 3s ease-in-out infinite;
+        }
+
+        /* Shake Effect */
+        @keyframes shake-anim {
+            0% { transform: translate(0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, 5px); }
+            100% { transform: translate(0); }
+        }
+
+        .shake {
+            animation: shake-anim 0.5s infinite;
         }
 
         /* Responsive Design */
-        @media (max-width: 600px) {
+        @media (max-width: 1200px) {
+            .cake-container {
+                width: 250px;
+                height: 250px;
+            }
+
+            .shop-section {
+                padding: 25px;
+            }
+
+            .shop-item .effect-preview, .upgrade-item .upgrade-preview {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .shop-section {
+                border-left: none;
+                border-top: 2px solid #CCCCCC;
+                width: 100%;
+                height: 50%;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 20px;
+                border-top-left-radius: 20px;
+            }
+
+            .cake-section {
+                width: 100%;
+                height: 50%;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 20px;
+            }
+
+            .cake-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .shop-item .effect-preview, .upgrade-item .upgrade-preview {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        @media (max-width: 500px) {
             .cake-container {
                 width: 150px;
                 height: 150px;
             }
 
-            .timer {
+            .timer, .coin-display {
                 font-size: 1em;
                 padding: 8px 16px;
             }
-        }
 
-        @media (max-width: 400px) {
-            .cake-container {
-                width: 120px;
-                height: 120px;
+            .shop-item .effect-preview, .upgrade-item .upgrade-preview {
+                width: 50px;
+                height: 50px;
             }
 
-            .timer {
-                font-size: 0.9em;
+            .shop-item button, .upgrade-item button {
                 padding: 6px 12px;
+                font-size: 0.8em;
             }
         }
     </style>
 </head>
 <body>
-    <div class="cake-container">
-        <!-- Replace the src attribute with your own chocolate cake PNG image -->
-        <img src="https://static.vecteezy.com/system/resources/previews/009/887/171/non_2x/chocolate-cake-free-png.png" alt="Chocolate Cake" class="cake">
-    </div>
+    <div class="main-container">
+        <!-- Cake Section -->
+        <div class="cake-section">
+            <div class="cake-container" id="cake-container">
+                <!-- Cake Image -->
+                <img src="https://static.vecteezy.com/system/resources/previews/009/887/171/non_2x/chocolate-cake-free-png.png" alt="Chocolate Cake" class="cake" id="cake">
+            </div>
 
-    <div class="timer">
-        You have been watching the chocolate cake for <span id="time">00:00:00</span>. You are a <span id="rank">Novice Baker</span>.
+            <!-- Timer Display -->
+            <div class="timer">
+                You have been watching the chocolate cake for <span id="time">00:00:00</span>. You are a <span id="rank">Novice Baker</span>.
+            </div>
+
+            <!-- Coin Display -->
+            <div class="coin-display">
+                Coins: <span id="coins">0</span>
+            </div>
+        </div>
+
+        <!-- Shop Section -->
+        <div class="shop-section">
+            <h2>Shop</h2>
+
+            <!-- Effects Shop -->
+            <div class="shop-category">
+                <h3>Effects</h3>
+                <div id="effects-shop">
+                    <!-- Effects will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Upgrades Shop -->
+            <div class="shop-category">
+                <h3>Upgrades</h3>
+                <div id="upgrades-shop">
+                    <!-- Upgrades will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Clone Animation
-        const cakeContainer = document.querySelector('.cake-container');
-        const cake = document.querySelector('.cake');
+        // Initialize Variables
+        let coins;
+        let coinsPerSecond;
+        let totalTime;
+        let selectedEffect;
 
-        function createClone() {
-            const clone = cake.cloneNode(true);
-            clone.classList.add('clone');
-            cakeContainer.appendChild(clone);
-
-            // Remove the clone after the animation completes to prevent DOM clutter
-            clone.addEventListener('animationend', () => {
-                clone.remove();
-            });
-        }
-
-        // Create a clone every second
-        setInterval(createClone, 1000);
-
-        // Timer Functionality with Persistent Storage
-        let totalTime = parseInt(localStorage.getItem('totalTime')) || 0;
         const timeDisplay = document.getElementById('time');
         const rankDisplay = document.getElementById('rank');
+        const coinsDisplay = document.getElementById('coins');
+        const cakeContainer = document.getElementById('cake-container');
+        const effectsShop = document.getElementById('effects-shop');
+        const upgradesShop = document.getElementById('upgrades-shop');
 
+        // Define Ranks
+        const ranks = [
+            { threshold: 0, rank: "Novice Baker" },
+            { threshold: 60, rank: "Apprentice Baker" },
+            { threshold: 180, rank: "Skilled Baker" },
+            { threshold: 360, rank: "Pro Baker" },
+            { threshold: 720, rank: "Expert Baker" },
+            { threshold: 1440, rank: "Master Baker" },
+            { threshold: 2880, rank: "Grand Master Baker" },
+            { threshold: 4320, rank: "Legendary Baker" },
+            { threshold: 5760, rank: "Supreme Baker" },
+            { threshold: 7200, rank: "Eternal Baker" },
+            { threshold: 8640, rank: "Infinite Baker" },
+            { threshold: 10080, rank: "Ultimate Baker" },
+            { threshold: 100080, rank: "mid baker" },
+            // Add more ranks as needed
+        ];
+
+        // Define Shop Items (Effects)
+        const effects = [
+            {
+                name: "None",
+                description: "No effect applied.",
+                price: 0, // Free
+                unlocked: true,
+                class: "none"
+            },
+            {
+                name: "Glitch",
+                description: "Adds a dynamic glitch animation to the cake.",
+                price: 100,
+                unlocked: false,
+                class: "glitch"
+            },
+            {
+                name: "Neon Glow",
+                description: "Gives the cake a vibrant neon glow.",
+                price: 200,
+                unlocked: false,
+                class: "neon"
+            },
+            {
+                name: "Spin",
+                description: "Makes the cake spin continuously.",
+                price: 10000,
+                unlocked: false,
+                class: "spin"
+            },
+            {
+                name: "Grow",
+                description: "Makes the cake grow and shrink periodically.",
+                price: 1800,
+                unlocked: false,
+                class: "grow"
+            },
+            {
+                name: "Fade",
+                description: "Makes the cake fade in and out.",
+                price: 2200,
+                unlocked: false,
+                class: "fade"
+            },
+            {
+                name: "Pulse",
+                description: "Makes the cake pulse gently.",
+                price: 250,
+                unlocked: false,
+                class: "pulse"
+            },
+            {
+                name: "Shake",
+                description: "Adds a shaking animation to the cake.",
+                price: 3000,
+                unlocked: false,
+                class: "shake"
+            },
+            // Removed: Swing, Wave, Flash, Pixelate
+            // Add more effects as needed
+        ];
+
+        // Define Upgrades
+        const upgrades = [
+            {
+                name: "Double Coins",
+                description: "Doubles the coins you earn per second.",
+                price: 200,
+                purchased: false
+            },
+            {
+                name: "Triple Coins",
+                description: "Triples the coins you earn per second.",
+                price: 600,
+                purchased: false
+            },
+            {
+                name: "Quadruple Coins",
+                description: "Quadruples the coins you earn per second.",
+                price: 1200,
+                purchased: false
+            },
+            {
+                name: "Quintuple Coins",
+                description: "Quintuples the coins you earn per second.",
+                price: 2500,
+                purchased: false
+            },
+            // Add more upgrades as needed
+        ];
+
+        // Save Data to Local Storage
+        function saveData() {
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('coinsPerSecond', coinsPerSecond);
+            localStorage.setItem('totalTime', totalTime);
+            localStorage.setItem('selectedEffect', selectedEffect);
+            // Save unlocked effects
+            effects.forEach((effect, index) => {
+                localStorage.setItem(`effect_${index}_unlocked`, effect.unlocked);
+            });
+            // Save purchased upgrades
+            upgrades.forEach((upgrade, index) => {
+                localStorage.setItem(`upgrade_${index}_purchased`, upgrade.purchased);
+            });
+            // Save hasVisited flag is handled in loadData()
+        }
+
+        // Load Data from Local Storage
+        function loadData() {
+            const hasVisited = localStorage.getItem('hasVisited');
+
+            if (!hasVisited) {
+                // First-time visit: Initialize all data
+                coins = 0;
+                coinsPerSecond = 1;
+                totalTime = 0;
+                selectedEffect = 'none';
+
+                // Initialize unlocked effects
+                effects.forEach(effect => {
+                    if (effect.class === 'none') {
+                        effect.unlocked = true;
+                    } else {
+                        effect.unlocked = false;
+                    }
+                });
+
+                // Initialize purchased upgrades
+                upgrades.forEach(upgrade => {
+                    upgrade.purchased = false;
+                });
+
+                // Save initial data
+                saveData();
+
+                // Set hasVisited flag
+                localStorage.setItem('hasVisited', 'true');
+            } else {
+                // Subsequent visits: Load data
+                coins = parseInt(localStorage.getItem('coins')) || 0;
+                coinsPerSecond = parseInt(localStorage.getItem('coinsPerSecond')) || 1;
+                totalTime = parseInt(localStorage.getItem('totalTime')) || 0;
+                selectedEffect = localStorage.getItem('selectedEffect') || 'none';
+
+                // Load unlocked effects
+                effects.forEach((effect, index) => {
+                    const unlocked = localStorage.getItem(`effect_${index}_unlocked`);
+                    if (unlocked !== null) {
+                        effect.unlocked = JSON.parse(unlocked);
+                    }
+                });
+
+                // Load purchased upgrades
+                upgrades.forEach((upgrade, index) => {
+                    const purchased = localStorage.getItem(`upgrade_${index}_purchased`);
+                    if (purchased !== null) {
+                        upgrade.purchased = JSON.parse(purchased);
+                        if (upgrade.purchased) {
+                            applyUpgrade(index);
+                        }
+                    }
+                });
+
+                // Apply selected effect
+                if (selectedEffect !== 'none') {
+                    const effect = effects.find(e => e.class === selectedEffect);
+                    if (effect && effect.unlocked) {
+                        applyEffect(effect.class);
+                    }
+                }
+            }
+        }
+
+        // Update Timer and Rank
         function updateTimer() {
             totalTime++;
             timeDisplay.textContent = formatTime(totalTime);
             rankDisplay.textContent = getRank(totalTime);
-            localStorage.setItem('totalTime', totalTime);
+            saveData();
         }
 
         function formatTime(sec) {
@@ -153,60 +581,7 @@
         }
 
         function getRank(sec) {
-            // Define ranks with exponentially increasing thresholds
-            const ranks = [
-                { threshold: 0, rank: "Novice Baker" },
-                { threshold: 30, rank: "Apprentice Baker" },
-                { threshold: 60, rank: "Skilled Baker" },
-                { threshold: 120, rank: "Pro Baker" },
-                { threshold: 240, rank: "Expert Baker" },
-                { threshold: 480, rank: "Master Baker" },
-                { threshold: 960, rank: "Grand Master Baker" },
-                { threshold: 1920, rank: "Legendary Baker" },
-                { threshold: 3840, rank: "Ultimate Baker" },
-                { threshold: 7680, rank: "Supreme Baker" },
-                { threshold: 15360, rank: "Epic Baker" },
-                { threshold: 30720, rank: "Mythical Baker" },
-                { threshold: 61440, rank: "Divine Baker" },
-                { threshold: 122880, rank: "Celestial Baker" },
-                { threshold: 245760, rank: "Ethereal Baker" },
-                { threshold: 491520, rank: "Transcendent Baker" },
-                { threshold: 983040, rank: "Infinite Baker" },
-                { threshold: 1966080, rank: "Omnipotent Baker" },
-                { threshold: 3932160, rank: "Supreme Deity Baker" },
-                { threshold: 7864320, rank: "Ultimate Godly Baker" },
-                { threshold: 15728640, rank: "Cosmic Baker" },
-                { threshold: 31457280, rank: "Galactic Baker" },
-                { threshold: 62914560, rank: "Universal Baker" },
-                { threshold: 125829120, rank: "Multiverse Baker" },
-                { threshold: 251658240, rank: "Omniverse Baker" },
-                { threshold: 503316480, rank: "Eternal Baker" },
-                { threshold: 1006632960, rank: "Infinite Eternity Baker" },
-                { threshold: 2013265920, rank: "Absolute Baker" },
-                { threshold: 4026531840, rank: "Absolute Eternity Baker" },
-                { threshold: 8053063680, rank: "Perpetual Baker" },
-                { threshold: 16106127360, rank: "Everlasting Baker" },
-                { threshold: 32212254720, rank: "Timeless Baker" },
-                { threshold: 64424509440, rank: "Immortal Baker" },
-                { threshold: 128849018880, rank: "Divine Immortal Baker" },
-                { threshold: 257698037760, rank: "Transcendent Immortal Baker" },
-                { threshold: 515396075520, rank: "Eternal Immortal Baker" },
-                { threshold: 1030792151040, rank: "Infinite Immortal Baker" },
-                { threshold: 2061584302080, rank: "Omniscient Baker" },
-                { threshold: 4123168604160, rank: "Supreme Omniscient Baker" },
-                { threshold: 8246337208320, rank: "Eternal Omniscient Baker" },
-                { threshold: 16492674416640, rank: "Cosmic Omniscient Baker" },
-                { threshold: 32985348833280, rank: "Galactic Omniscient Baker" },
-                { threshold: 65970697666560, rank: "Universal Omniscient Baker" },
-                { threshold: 131941395333120, rank: "Multiversal Omniscient Baker" },
-                { threshold: 263882790666240, rank: "Omniversal Omniscient Baker" },
-                { threshold: 527765581332480, rank: "Infinite Omniscient Baker" },
-                { threshold: 1055531162664960, rank: "Timeless Omniscient Baker" }
-            ];
-
-            // Find the highest rank that the seconds >= threshold
             let currentRank = "Novice Baker"; // Default rank
-
             for (let i = 0; i < ranks.length; i++) {
                 if (sec >= ranks[i].threshold) {
                     currentRank = ranks[i].rank;
@@ -214,16 +589,224 @@
                     break;
                 }
             }
-
             return currentRank;
         }
 
-        // Initialize the timer display
-        timeDisplay.textContent = formatTime(totalTime);
-        rankDisplay.textContent = getRank(totalTime);
+        // Update Coins Display
+        function updateCoins() {
+            coinsDisplay.textContent = coins;
+        }
 
-        // Start the timer
-        setInterval(updateTimer, 1000);
+        // Increment Coins
+        function incrementCoins() {
+            coins += coinsPerSecond;
+            updateCoins();
+            saveData();
+        }
+
+        // Initialize Shop
+        function initializeShop() {
+            // Initialize Effects Shop
+            effects.forEach((effect, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('shop-item');
+
+                const name = document.createElement('h4');
+                name.textContent = effect.name;
+
+                const description = document.createElement('p');
+                description.textContent = effect.description;
+
+                const previewDiv = document.createElement('div');
+                previewDiv.classList.add('effect-preview');
+
+                if (effect.class !== 'none') {
+                    const previewImg = document.createElement('img');
+                    previewImg.src = "https://static.vecteezy.com/system/resources/previews/009/887/171/non_2x/chocolate-cake-free-png.png"; // Same cake image
+                    previewImg.alt = `${effect.name} Preview`;
+                    previewDiv.appendChild(previewImg);
+                    // Apply the effect class to preview
+                    previewDiv.classList.add(effect.class);
+                } else {
+                    const previewImg = document.createElement('img');
+                    previewImg.src = "https://static.vecteezy.com/system/resources/previews/009/887/171/non_2x/chocolate-cake-free-png.png";
+                    previewImg.alt="Default Cake";
+                    previewDiv.appendChild(previewImg);
+                }
+
+                const price = document.createElement('p');
+                price.textContent = `Price: ${effect.price} coins`;
+
+                const button = document.createElement('button');
+                button.textContent = effect.unlocked ? (selectedEffect === effect.class ? 'Selected' : 'Select') : `Buy (${effect.price})`;
+                button.disabled = !effect.unlocked && coins < effect.price;
+                button.addEventListener('click', () => purchaseEffect(index));
+
+                itemDiv.appendChild(name);
+                itemDiv.appendChild(description);
+                itemDiv.appendChild(previewDiv);
+                itemDiv.appendChild(price);
+                itemDiv.appendChild(button);
+
+                effectsShop.appendChild(itemDiv);
+            });
+
+            // Initialize Upgrades Shop
+            upgrades.forEach((upgrade, index) => {
+                const upgradeDiv = document.createElement('div');
+                upgradeDiv.classList.add('upgrade-item');
+
+                const name = document.createElement('h4');
+                name.textContent = upgrade.name;
+
+                const desc = document.createElement('p');
+                desc.textContent = upgrade.description;
+
+                const price = document.createElement('p');
+                price.textContent = `Price: ${upgrade.price} coins`;
+
+                const previewDiv = document.createElement('div');
+                previewDiv.classList.add('upgrade-preview');
+                const previewImg = document.createElement('img');
+                previewImg.src = "https://cdn-icons-png.flaticon.com/512/833/833472.png"; // Example upgrade icon
+                previewImg.alt="Upgrade Icon";
+                previewDiv.appendChild(previewImg);
+
+                const button = document.createElement('button');
+                button.textContent = upgrade.purchased ? 'Purchased' : `Buy (${upgrade.price})`;
+                button.disabled = upgrade.purchased || coins < upgrade.price;
+                button.addEventListener('click', () => purchaseUpgrade(index));
+
+                upgradeDiv.appendChild(name);
+                upgradeDiv.appendChild(desc);
+                upgradeDiv.appendChild(previewDiv);
+                upgradeDiv.appendChild(price);
+                upgradeDiv.appendChild(button);
+
+                upgradesShop.appendChild(upgradeDiv);
+            });
+        }
+
+        // Refresh Shop Display
+        function refreshShop() {
+            // Refresh Effects
+            const effectItems = effectsShop.getElementsByClassName('shop-item');
+            effects.forEach((effect, index) => {
+                const itemDiv = effectItems[index];
+                const button = itemDiv.querySelector('button');
+                if (effect.unlocked) {
+                    button.textContent = (selectedEffect === effect.class) ? 'Selected' : 'Select';
+                } else {
+                    button.textContent = `Buy (${effect.price})`;
+                }
+                button.disabled = !effect.unlocked && coins < effect.price;
+            });
+
+            // Refresh Upgrades
+            const upgradeItems = upgradesShop.getElementsByClassName('upgrade-item');
+            upgrades.forEach((upgrade, index) => {
+                const upgradeDiv = upgradeItems[index];
+                const button = upgradeDiv.querySelector('button');
+                if (upgrade.purchased) {
+                    button.textContent = 'Purchased';
+                } else {
+                    button.textContent = `Buy (${upgrade.price})`;
+                }
+                button.disabled = upgrade.purchased || coins < upgrade.price;
+            });
+        }
+
+        // Purchase Effect
+        function purchaseEffect(index) {
+            const effect = effects[index];
+            if (effect.price === 0) {
+                // Select the effect
+                selectedEffect = effect.class;
+                applyEffect(selectedEffect);
+                saveData();
+                refreshShop();
+                return;
+            }
+
+            if (coins >= effect.price && !effect.unlocked) {
+                coins -= effect.price;
+                effect.unlocked = true;
+                selectedEffect = effect.class;
+                applyEffect(selectedEffect);
+                saveData();
+                refreshShop();
+            } else if (effect.unlocked) {
+                // Select the effect
+                selectedEffect = effect.class;
+                applyEffect(selectedEffect);
+                saveData();
+                refreshShop();
+            }
+        }
+
+        // Purchase Upgrade
+        function purchaseUpgrade(index) {
+            const upgrade = upgrades[index];
+            if (coins >= upgrade.price && !upgrade.purchased) {
+                coins -= upgrade.price;
+                upgrade.purchased = true;
+                applyUpgrade(index);
+                saveData();
+                refreshShop();
+            }
+        }
+
+        // Apply Upgrade Effects
+        function applyUpgrade(index) {
+            const upgrade = upgrades[index];
+            switch(upgrade.name) {
+                case "Double Coins":
+                    coinsPerSecond *= 2;
+                    break;
+                case "Triple Coins":
+                    coinsPerSecond *= 3;
+                    break;
+                case "Quadruple Coins":
+                    coinsPerSecond *= 4;
+                    break;
+                case "Quintuple Coins":
+                    coinsPerSecond *= 5;
+                    break;
+                // Add more upgrade cases as needed
+                default:
+                    break;
+            }
+        }
+
+        // Apply Effect to the Cake
+        function applyEffect(effectClass) {
+            // Remove all effect classes except 'none'
+            effects.forEach(e => {
+                if (e.class !== 'none') {
+                    cakeContainer.classList.remove(e.class);
+                }
+            });
+
+            if (effectClass !== 'none') {
+                cakeContainer.classList.add(effectClass);
+            }
+
+            // Update the selectedEffect variable
+            selectedEffect = effectClass;
+        }
+
+        // Initialize the Application
+        function initialize() {
+            loadData();
+            updateCoins();
+            updateTimer();
+            initializeShop();
+            setInterval(incrementCoins, 1000);
+            setInterval(updateTimer, 1000);
+        }
+
+        // Run the Initialize Function on Page Load
+        window.onload = initialize;
     </script>
 </body>
 </html>
