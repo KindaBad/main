@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Custom Encoding System
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @description  Custom encoding system like unicode
+// @version      2.3
+// @description  Custom encoding system with proper Space and Enter handling, plus emoji support.
 // @author       KindaBad
 // @match        *://*/*
 // @grant        none
@@ -12,7 +12,7 @@
     'use strict';
 
     // ======== Custom Mappings ========
-    // Just add "K+key output" on each line (no parentheses, no commas, no indentation)
+    // Use "K+key output" for each mapping
     const mappingText = `
 K+0 ﷺ
 K+-1 �
@@ -20,6 +20,8 @@ K+inf ∞
 K+pi π
 K+sqrt √
 K+skull 💀
+K+smile 😊
+K+rocket 🚀
     `;
 
     // ======== Parse Mappings ========
@@ -58,10 +60,13 @@ K+skull 💀
                 ? activeElement.value
                 : activeElement.textContent;
 
+        // Check all mappings and replace matches
         Object.keys(customMappings).forEach((key) => {
-            const regex = new RegExp(`\\b${key}\\b`, "g"); // Match whole word
+            const regex = new RegExp(`\\b${key}(\\s|$)`, "g"); // Match the key followed by space or end
             if (regex.test(currentValue)) {
-                const replacedValue = currentValue.replace(regex, customMappings[key]);
+                const replacedValue = currentValue.replace(regex, (_, trailingSpace) => {
+                    return customMappings[key] + (trailingSpace || " ");
+                });
                 if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
                     activeElement.value = replacedValue;
                 } else if (activeElement.isContentEditable) {
@@ -79,9 +84,10 @@ K+skull 💀
     document.addEventListener("keydown", (event) => {
         const activeElement = document.activeElement;
 
-        if (isTypingElement(activeElement) && (event.key === "Enter" || event.key === " ")) {
-            event.preventDefault();
-            replaceSequence(activeElement);
+        if (isTypingElement(activeElement)) {
+            if (event.key === "Enter" || event.key === " ") {
+                setTimeout(() => replaceSequence(activeElement), 0); // Allow input to update before replacing
+            }
         }
     });
 })();
