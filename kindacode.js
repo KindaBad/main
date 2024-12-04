@@ -1,33 +1,45 @@
 // ==UserScript==
 // @name         Custom Encoding System
 // @namespace    http://tampermonkey.net/
-// @version      1.6
-// @description  A custom encoding system with delayed updates and GitHub hosting support.
-// @author       YourName
+// @version      2.0
+// @description  Custom encoding system like unicode
+// @author       KindaBad
 // @match        *://*/*
-// @updateURL    https://raw.githubusercontent.com/your-username/custom-encoding-system/main/custom-encoding.user.js
-// @downloadURL  https://raw.githubusercontent.com/your-username/custom-encoding-system/main/custom-encoding.user.js
 // @grant        none
 // ==/UserScript==
 
 (function () {
     'use strict';
 
-    // Custom mappings
-    const customMappings = {
-        "K+0": "ﷺ",
-        "K+-1": "�",
-        "K+inf": "∞",
-        "K+pi": "π",
-        "K+sqrt": "√",
-        "K+01": "࿚",
-        // Add more mappings here...
-    };
+    // ======== Custom Mappings ========
+    // Just add "K+key output" on each line (no parentheses, no commas, no indentation)
+    const mappingText = `
+K+0 ﷺ
+K+-1 �
+K+inf ∞
+K+pi π
+K+sqrt √
+K+skull 💀
+    `;
 
-    // Track whether Ctrl+Shift+K was pressed
-    let listeningForKPlus = false;
+    // ======== Parse Mappings ========
+    const customMappings = mappingText
+        .split("\n") // Split by line
+        .map((line) => line.trim()) // Trim whitespace
+        .filter((line) => line && !line.startsWith("//")) // Ignore empty lines and comments
+        .reduce((mappings, line) => {
+            const [key, ...output] = line.split(" "); // Split into key and output
+            if (key && output.length) mappings[key] = output.join(" ");
+            return mappings;
+        }, {});
 
-    // Detect active typing fields
+    // ======== Helper Functions ========
+
+    /**
+     * Checks if the active element is a typing field (textarea, input, contenteditable).
+     * @param {HTMLElement} element - The currently active DOM element.
+     * @returns {boolean} - True if the element is a typing field.
+     */
     function isTypingElement(element) {
         return (
             element.tagName === "TEXTAREA" ||
@@ -36,69 +48,40 @@
         );
     }
 
-    // Add keypress listener for Ctrl + Shift + K
-    document.addEventListener("keydown", (event) => {
-        if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "k") {
-            event.preventDefault();
-            listeningForKPlus = true;
+    /**
+     * Replaces matching sequences in the active typing field with their corresponding values.
+     * @param {HTMLElement} activeElement - The currently active DOM element.
+     */
+    function replaceSequence(activeElement) {
+        const currentValue =
+            activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA"
+                ? activeElement.value
+                : activeElement.textContent;
 
-            const activeElement = document.activeElement;
-
-            if (isTypingElement(activeElement)) {
+        Object.keys(customMappings).forEach((key) => {
+            const regex = new RegExp(`\\b${key}\\b`, "g"); // Match whole word
+            if (regex.test(currentValue)) {
+                const replacedValue = currentValue.replace(regex, customMappings[key]);
                 if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
-                    const cursorPosition = activeElement.selectionStart;
-                    const currentValue = activeElement.value;
-
-                    // Insert "K+" at the cursor position
-                    activeElement.value =
-                        currentValue.slice(0, cursorPosition) +
-                        "K+" +
-                        currentValue.slice(cursorPosition);
-
-                    activeElement.setSelectionRange(cursorPosition + 2, cursorPosition + 2); // Place cursor after "K+"
+                    activeElement.value = replacedValue;
                 } else if (activeElement.isContentEditable) {
-                    document.execCommand("insertText", false, "K+");
+                    activeElement.textContent = replacedValue;
                 }
             }
-        }
-    });
+        });
+    }
 
-    // Replace sequences only when Enter is pressed
+    // ======== Main Listeners ========
+
+    /**
+     * Listens for Space or Enter and triggers replacement.
+     */
     document.addEventListener("keydown", (event) => {
-        if (listeningForKPlus && event.key === "Enter") {
+        const activeElement = document.activeElement;
+
+        if (isTypingElement(activeElement) && (event.key === "Enter" || event.key === " ")) {
             event.preventDefault();
-            const activeElement = document.activeElement;
-
-            if (isTypingElement(activeElement)) {
-                const currentValue =
-                    activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA"
-                        ? activeElement.value
-                        : activeElement.textContent;
-
-                // Replace K+ sequences based on longest match
-                const regex = new RegExp(
-                    Object.keys(customMappings)
-                        .map((key) => key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) // Escape special regex characters
-                        .sort((a, b) => b.length - a.length) // Sort by length (longest first)
-                        .join("|"),
-                    "g"
-                );
-
-                const matches = currentValue.match(regex);
-
-                if (matches) {
-                    matches.forEach((match) => {
-                        const replacement = customMappings[match];
-                        if (replacement) {
-                            if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
-                                activeElement.value = currentValue.replace(match, replacement);
-                            } else if (activeElement.isContentEditable) {
-                                activeElement.textContent = currentValue.replace(match, replacement);
-                            }
-                        }
-                    });
-                }
-            }
+            replaceSequence(activeElement);
         }
     });
 })();
