@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Custom Encoding System
 // @namespace    http://tampermonkey.net/
-// @version      2.3
-// @description  Custom encoding system with proper Space and Enter handling, plus emoji support.
+// @version      2.4
+// @description  Custom encoding system with proper Space and Enter handling.
 // @author       KindaBad
 // @match        *://*/*
 // @grant        none
@@ -20,17 +20,15 @@ K+inf ∞
 K+pi π
 K+sqrt √
 K+skull 💀
-K+smile 😊
-K+rocket 🚀
     `;
 
     // ======== Parse Mappings ========
     const customMappings = mappingText
-        .split("\n") // Split by line
-        .map((line) => line.trim()) // Trim whitespace
-        .filter((line) => line && !line.startsWith("//")) // Ignore empty lines and comments
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line && !line.startsWith("//"))
         .reduce((mappings, line) => {
-            const [key, ...output] = line.split(" "); // Split into key and output
+            const [key, ...output] = line.split(" ");
             if (key && output.length) mappings[key] = output.join(" ");
             return mappings;
         }, {});
@@ -60,12 +58,11 @@ K+rocket 🚀
                 ? activeElement.value
                 : activeElement.textContent;
 
-        // Check all mappings and replace matches
         Object.keys(customMappings).forEach((key) => {
-            const regex = new RegExp(`\\b${key}(\\s|$)`, "g"); // Match the key followed by space or end
+            const regex = new RegExp(`${key}(\\s|$)`, "g");
             if (regex.test(currentValue)) {
                 const replacedValue = currentValue.replace(regex, (_, trailingSpace) => {
-                    return customMappings[key] + (trailingSpace || " ");
+                    return customMappings[key] + (trailingSpace || "");
                 });
                 if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
                     activeElement.value = replacedValue;
@@ -86,7 +83,8 @@ K+rocket 🚀
 
         if (isTypingElement(activeElement)) {
             if (event.key === "Enter" || event.key === " ") {
-                setTimeout(() => replaceSequence(activeElement), 0); // Allow input to update before replacing
+                event.preventDefault(); // Prevent default newline (Enter) or space handling
+                setTimeout(() => replaceSequence(activeElement), 0); // Allow input to update first
             }
         }
     });
